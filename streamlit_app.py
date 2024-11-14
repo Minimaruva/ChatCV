@@ -14,7 +14,7 @@ if uploaded_file is not None:
     stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
     # Read file as string:
     uploaded_file_string_data = stringio.read()
-    st.write(uploaded_file_string_data)
+    # st.write(uploaded_file_string_data)
 
 # Ask a question
 question = st.text_input(
@@ -25,15 +25,12 @@ question = st.text_input(
 
 if uploaded_file and question:
 
-    question_answerer = pipeline("question-answering", model='distilbert-base-cased-distilled-squad')
-    # generator = pipeline('text-generation', model='distilgpt2')
-    # Split CV into sequences
-    context = uploaded_file_string_data.split(sep=".")
-    promt = ["You are CV analyser, you give detailed, correct answers only based on provided context. If the answer is not in the context, you can't make it up, tell me that you can't find the answer."]
+    question_answerer = pipeline("question-answering", model="deepset/roberta-large-squad2")
 
-    context = uploaded_file_string_data
+    context = "This is a CV of a candidate." + uploaded_file_string_data
+    # context = uploaded_file_string_data.split(sep=".")
 
-    basic_answer = question_answerer(question=question, context=context)["answer"]
 
-    # expanded_answer = generator(f"Question: {question} Answer: {basic_answer}  Could you elaborate? Context: {context}.", max_length=290)[0]["generated_text"]
+    basic_answer = question_answerer(question=question, context=context, min_answer_len=50)['answer']
+
     st.write(f"Basic answer: {basic_answer}")
