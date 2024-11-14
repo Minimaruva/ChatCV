@@ -25,16 +25,15 @@ question = st.text_input(
 
 if uploaded_file and question:
 
-    question_answerer = pipeline("question-answering")
-    generator = pipeline("text-generation", model="gpt2")
+    question_answerer = pipeline("question-answering", model='distilbert-base-cased-distilled-squad')
+    # generator = pipeline('text-generation', model='distilgpt2')
     # Split CV into sequences
-    # context = uploaded_file_string_data.split(sep=".")
-    # promt = "You are CV analyser, you give detailed, correct answers only based on provided context"
+    context = uploaded_file_string_data.split(sep=".")
+    promt = ["You are CV analyser, you give detailed, correct answers only based on provided context. If the answer is not in the context, you can't make it up, tell me that you can't find the answer."]
 
     context = uploaded_file_string_data
 
     basic_answer = question_answerer(question=question, context=context)["answer"]
 
-    expanded_answer = generator(f"Question: {question} Answer: {basic_answer}. Could you elaborate?", max_length=50)[0]["generated_text"]
+    # expanded_answer = generator(f"Question: {question} Answer: {basic_answer}  Could you elaborate? Context: {context}.", max_length=290)[0]["generated_text"]
     st.write(f"Basic answer: {basic_answer}")
-    st.write(f"Expanded answer: {expanded_answer}")
